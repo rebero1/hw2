@@ -98,6 +98,6 @@ token scan()
         
         default:
             fprintf(stderr, "unexpected character '%c' (0x%x)\n", c, c);
-            exit(1);
+            exit(1);//handle lexical errors here
         }
 }
