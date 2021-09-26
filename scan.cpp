@@ -19,13 +19,14 @@ token scan()
     char c;
     /* next available char; extra (int) width accommodates EOF */
     int i = 0; /* index into token_image */
-
+ std::cin.get(c);
+   
     // /* skip white space */
-    // while (isspace(c))
-    // {
-    //     c = getchar();
-    // }
-    std::cin.get(c);
+    while (isspace(c))
+    {  
+        c = getchar();
+    }
+   
     if (c == EOF)
         return t_eof;
     if (isalpha(c))
