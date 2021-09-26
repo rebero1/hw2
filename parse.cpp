@@ -66,7 +66,7 @@ int check_for_error(std::set<token> first_set, std::set<token> follow_set){
     
  if(first_set.find(upcoming_token) == first_set.end() && follow_set.find(upcoming_token) == follow_set.end()){//print error
      std::cerr<<"error: token \""<<names[upcoming_token]<<"\" not parseable\n";
-     memmove(token_image, token_image+1,strlen(token_image +1)+1);
+    //  memmove(token_image, token_image+1,strlen(token_image +1)+1);
 
      if(upcoming_token != t_eof) upcoming_token = scan();
      
@@ -74,7 +74,7 @@ int check_for_error(std::set<token> first_set, std::set<token> follow_set){
 
  
  while(first_set.find(upcoming_token) == first_set.end() && follow_set.find(upcoming_token) == follow_set.end() && upcoming_token != t_eof){//delete tokens
-    memmove(token_image, token_image+1,strlen(token_image +1)+1);
+    // memmove(token_image, token_image+1,strlen(token_image +1)+1);
     if(upcoming_token != t_eof) upcoming_token = scan();
  }
 
@@ -117,22 +117,23 @@ void match(token expected)
         // error();
 }
 
-void program();
-void stmt_list();
-void stmt();
-void relation();
-void expr();
-void term();
-void term_tail();
-void factor();
-void expr_tail();
-void factor_tail();
-void add_op();
-void mul_op();
-void rel_op();
+std::string program();
+std::string stmt_list();
+std::string stmt();
+std::string relation();
+std::string expr();
+std::string term();
+std::string term_tail(std::string t);
+std::string factor();
+std::string expr_tail();
+std::string factor_tail(std::string f);
+std::string add_op();
+std::string mul_op();
+std::string rel_op();
 
-void program()
+std::string program()
 {
+    std::string syntax_tree = "";
     int error_code = check_for_error(first_P, follow_P);
     switch(error_code)
     {
@@ -140,7 +141,7 @@ void program()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -153,18 +154,23 @@ void program()
     case t_do:
     case t_check:
     case t_eof:
+        syntax_tree+="(program [";
         // puts("predict program --> stmt_list eof\n");
         std::cout<<"predict program --> stmt_list eof\n";
-        stmt_list();
+        syntax_tree += stmt_list();
         match(t_eof);
+        syntax_tree += "])";
         break;
     default:
         error();
     }
+    return syntax_tree;
 }
 
-void stmt_list()
+std::string stmt_list()
 {
+    std::string syntax_tree = "";
+    std::string slist = "";
     int error_code = check_for_error(first_SL, follow_SL);
     switch(error_code)
     {
@@ -172,7 +178,7 @@ void stmt_list()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -185,8 +191,9 @@ void stmt_list()
     case t_do:
     case t_check:
         std::cout<<"predict stmt_list --> stmt stmt_list\n";
-        stmt();
-        stmt_list();
+        syntax_tree+=stmt();
+        slist+=stmt_list();
+        syntax_tree+=slist;
         break;
     case t_eof:
     case t_fi:
@@ -196,10 +203,13 @@ void stmt_list()
     default:
         error();
     }
+
+    return syntax_tree;
 }
 
-void stmt()
+std::string stmt()
 {
+    std::string syntax_tree = "";
     int error_code = check_for_error(first_S, follow_S);
     switch(error_code)
     {
@@ -207,7 +217,7 @@ void stmt()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -215,46 +225,65 @@ void stmt()
     {
     case t_id:
         std::cout<<"predict stmt --> id gets relation\n";
+        syntax_tree+="(:= \"";
+        syntax_tree+=token_image;
+        syntax_tree += "\"";
         match(t_id);
-        match(t_gets);
-        // expr();
-        relation();
+        match(t_gets);        
+        syntax_tree+=relation();
+        syntax_tree+=")";
         break;
     case t_read:
         std::cout<<"predict stmt --> read id\n";
+        syntax_tree+="(read ";
+        syntax_tree+="\"";
         match(t_read);
+        syntax_tree+=token_image;
         match(t_id);
+        syntax_tree += "\")";
         break;
     case t_write:
         std::cout<<"predict stmt --> write relation\n";
-        match(t_write);
-        // expr();
-        relation();
+        syntax_tree+="(write ";
+        match(t_write); 
+        syntax_tree+=relation();
+        syntax_tree+=")";
         break;
     case t_if:
         std::cout<<"predict stmt --> if relation stmt_list fi\n";
-        match(t_if);
-        relation();
-        stmt_list();
+        syntax_tree+="(if (";
+        match(t_if);      
+        syntax_tree+=relation();
+        syntax_tree+=")[";
+        syntax_tree+=stmt_list();
+        syntax_tree+="])";
         match(t_fi);
         break;
     case t_do:
         std::cout<<"predict stmt --> do stmt_list od\n";
         match(t_do);
-        stmt_list();
+        syntax_tree+="(do [";
+        syntax_tree+=stmt_list();
         match(t_od);
+        syntax_tree+="])";
         break;
     case t_check:
         std::cout<<"predict stmt --> check relation\n";
+        syntax_tree+="(check ";
         match(t_check);
-        relation();  
+        syntax_tree+=relation();  
+        syntax_tree+=")";
         break;
     default:
         error();
     }
+
+    return syntax_tree;
 }
 
-void relation(){//R	→ 	E ET
+std::string relation(){//R	→ 	E ET
+    std::string syntax_tree = "";
+    std::string exprr = "";
     int error_code = check_for_error(first_R, follow_R);
     switch(error_code)
     {
@@ -262,26 +291,35 @@ void relation(){//R	→ 	E ET
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
     switch (upcoming_token)
     {
+       
         case t_id:
         case t_lparen:
         case t_literal:
             std::cout<<"predict relation -> expr expr_tail\n";
-            expr();
-            expr_tail();
+            syntax_tree +="( ";
+            syntax_tree+= expr();
+            syntax_tree+=token_image;
+            syntax_tree+=expr_tail();
+            syntax_tree +=" )";
             break;
         default:
             error();
     }
+
+    return syntax_tree;
 }
 
-void expr()
+std::string expr()
 {
+    std::string syntax_tree = "";
+    std::string t = "";
+    std::string tt = "";
     int error_code = check_for_error(first_E, follow_E);
     switch(error_code)
     {
@@ -289,7 +327,7 @@ void expr()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -299,16 +337,24 @@ void expr()
     case t_literal:
     case t_lparen:
         std::cout<<"predict expr --> term term_tail\n";
-        term();
-        term_tail();
+        t+=term();
+        tt+=term_tail(t);
+        syntax_tree+=tt;
+        if (t.compare(tt) != 0) syntax_tree += ")";
+        //syntax_tree+=")";
         break;
     default:
         error();
     }
+
+    return syntax_tree;
 }
 
-void term()
+std::string term()
 {
+    std::string syntax_tree = "";
+    std::string f = "";
+    std::string ft = "";
     int error_code = check_for_error(first_T, follow_T);
     switch(error_code)
     {
@@ -316,7 +362,7 @@ void term()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -326,16 +372,24 @@ void term()
     case t_literal:
     case t_lparen:
         std::cout<<"predict term --> factor factor_tail\n";
-        factor();
-        factor_tail();
+        f+=factor();
+        ft+=factor_tail(f);
+        syntax_tree+=ft;
+        if (f.compare(ft) != 0) syntax_tree += ")";
+        //syntax_tree+=")";
         break;
     default:
         error();
     }
+
+    return syntax_tree;
 }
 
-void term_tail()
+std::string term_tail(std::string t)
 {
+    std::string syntax_tree = "";
+    std::string term_l = "";
+    std::string sb = "";
     int error_code = check_for_error(first_TT, follow_TT);
     switch(error_code)
     {
@@ -343,7 +397,7 @@ void term_tail()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -352,9 +406,15 @@ void term_tail()
     case t_add:
     case t_sub:
         std::cout<<"predict term_tail --> add_op term term_tail\n";
-        add_op();
-        term();
-        term_tail();
+        syntax_tree+="(";
+        // syntax_tree+=add_op();
+        // syntax_tree+= t + " ";
+        // term_l+=term();
+        sb = add_op()+t+term();
+
+        // std::string sb = ( + t term)
+
+        syntax_tree+=term_tail(sb);
         break;
     case t_rparen:
     case t_id:
@@ -373,14 +433,19 @@ void term_tail()
     case t_le:
     case t_ge:
         std::cout<<"predict term_tail --> epsilon\n";
+        syntax_tree+=t;
         break; /* epsilon production */
     default:
+        syntax_tree+=t;
         error();
     }
+
+    return syntax_tree;
 }
 
-void factor()
+std::string factor()
 {
+    std::string syntax_tree = "";
     int error_code = check_for_error(first_F, follow_F);
     switch(error_code)
     {
@@ -388,7 +453,7 @@ void factor()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -396,25 +461,41 @@ void factor()
     {
     case t_literal:
         std::cout<<"predict factor --> literal\n";
+        syntax_tree+="(num \"";
+        syntax_tree+= token_image;
+        std::cout<<"here"<<token_image<<std::endl;
+        syntax_tree+="\")";
         match(t_literal);
         break;
     case t_id:
         std::cout<<"predict factor --> id\n";
+        syntax_tree+="(id \"";
+        syntax_tree+= token_image;
+        syntax_tree+="\")";
         match(t_id);
+        std::cout<<"here"<<token_image<<std::endl;
         break;
     case t_lparen:
         std::cout<<"predict factor --> lparen relation rparen\n";
         match(t_lparen);
-        relation();
+        syntax_tree+="(";
+        syntax_tree+=relation();
         match(t_rparen);
+        syntax_tree+=")";
         break;
     default:
         error();
     }
+
+    return syntax_tree;
 }
 
-void factor_tail()
+std::string factor_tail(std::string f)
 {
+    std::string syntax_tree="";
+    std::string ftor = "";
+    std::string ftail = "";
+    std::string st = "";
     int error_code = check_for_error(first_FT, follow_FT);
     switch(error_code)
     {
@@ -422,7 +503,7 @@ void factor_tail()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -431,9 +512,14 @@ void factor_tail()
     case t_mul:
     case t_div:
         std::cout<<"predict factor_tail --> mul_op factor factor_tail\n";
-        mul_op();
-        factor();
-        factor_tail();
+        syntax_tree+="(";
+        // syntax_tree+=mul_op();
+        st = mul_op()+f+factor();
+        std::cout<<"st"<<st<<std::endl;
+        // syntax_tree+= f + " ";
+        // ftor+=factor();
+        // ftail+=factor_tail(ftor);
+        syntax_tree+=factor_tail(st);
         break;
     case t_add:
     case t_sub:
@@ -454,14 +540,19 @@ void factor_tail()
     case t_le:
     case t_ge:
         std::cout<<"predict factor_tail --> epsilon\n";
+        syntax_tree+= f;
         break; /* epsilon production */
     default:
+        syntax_tree+= f;
         error();
     }
+
+    return syntax_tree;
 }
 
-void add_op()
+std::string add_op()
 {
+    std::string syntax_tree = "";
     int error_code = check_for_error(first_ao, follow_ao);
     switch(error_code)
     {
@@ -469,7 +560,7 @@ void add_op()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -478,18 +569,22 @@ void add_op()
     case t_add:
         std::cout<<"predict add_op --> add\n";
         match(t_add);
+        syntax_tree+="+ ";
         break;
     case t_sub:
         std::cout<<"predict add_op --> sub\n";
         match(t_sub);
+        syntax_tree+="- ";
         break;
     default:
         error();
     }
+    return syntax_tree;
 }
 
-void mul_op()
+std::string mul_op()
 {
+    std::string syntax_tree="";
     int error_code = check_for_error(first_mo, follow_mo);
     switch(error_code)
     {
@@ -497,7 +592,7 @@ void mul_op()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -506,18 +601,23 @@ void mul_op()
     case t_mul:
         std::cout<<"predict mul_op --> mul\n";
         match(t_mul);
+        syntax_tree+="* ";
         break;
     case t_div:
         std::cout<<"predict mul_op --> div\n";
         match(t_div);
+        syntax_tree+="/ ";
         break;
     default:
         error();
     }
+
+    return syntax_tree;
 }
 
-void rel_op()
+std::string rel_op()
 {
+    std::string syntax_tree="";
     int error_code = check_for_error(first_ro, follow_ro);
     switch(error_code)
     {
@@ -525,7 +625,7 @@ void rel_op()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -533,36 +633,46 @@ void rel_op()
     {
     case t_dequals:
         std::cout<<"predict rel_op --> dequals\n";
+        syntax_tree+="== ";
         match(t_dequals);
+        
         break;
     case t_nequal:
         std::cout<<"predict rel_op --> t_nequal\n";
         match(t_nequal);
+        syntax_tree+="<> ";
         break;
     case t_lt:
         std::cout<<"predict rel_op --> t_lt\n";
         match(t_lt);
+        syntax_tree+="< ";
         break;
     case t_gt:
         std::cout<<"predict rel_op --> t_gt\n";
         match(t_gt);
+        syntax_tree+="> ";
         break;
     case t_le:
         std::cout<<"predict rel_op --> t_le\n";
         match(t_le);
+        syntax_tree+="<= ";
         break;
     case t_ge:
         std::cout<<"predict rel_op --> t_ge\n";
         match(t_ge);
+        syntax_tree+=">= ";
         break;
     default:
         error();
     }
 
+    return syntax_tree;
+
 }
 
-void expr_tail()
+std::string expr_tail()
 {
+    std::string syntax_tree = "";
     int error_code = check_for_error(first_ET, follow_ET);
     switch(error_code)
     {
@@ -570,7 +680,7 @@ void expr_tail()
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return;
+            return syntax_tree;
         default:
             error();    
     }
@@ -583,8 +693,8 @@ void expr_tail()
     case t_le:
     case t_ge:
         std::cout<<"predict expr_tail --> rel_op expr\n";
-        rel_op();
-        expr();
+        syntax_tree+=rel_op();
+        syntax_tree+=expr();
         break;
     case t_eof:
     case t_id:
@@ -603,12 +713,15 @@ void expr_tail()
         error();
     }
 
+    return syntax_tree;
+
 }
 
 int main()
 {
     upcoming_token = scan();
     // std::cout<<"upcoming token: "<<upcoming_token<<std::endl;
-    program();
+    std::string syntax_tree = program();
+    std::cout<<"SYNTAX TREE:"<<syntax_tree<<std::endl;
     return 0;
 }
