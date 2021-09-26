@@ -3,16 +3,14 @@
 # Note that the rule for the goal (parse)
 # must be the first one in this file.
 
-CC = gcc
-CFLAGS = -g -O2 -Wall -Wpedantic
-
-.c.o:
-	$(CC) $(CFLAGS) -c $<
+CPPFLAGS = -std=c++11
+# Note that rule for goal (parse) must be the first one in this file.
 
 parse: parse.o scan.o
-	$(CC) $(CFLAGS) -o parse parse.o scan.o
+	g++ $(CPPFLAGS) -o parse parse.o scan.o
+
+clean:
+	rm *.o parse
 
 parse.o: scan.h
 scan.o: scan.h
-
-clean: -rm *.o

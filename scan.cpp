@@ -55,8 +55,8 @@ token scan()
             return t_do;
          else if (!strcmp(token_image, "od"))
             return t_od;
-         else if (!strcmp(token_image, "eof"))
-            return t_eof;
+        //  else if (!strcmp(token_image, "eof"))
+        //     return t_eof;
         else
             return t_id;
     }
@@ -222,7 +222,8 @@ token scan()
         
         
         default:
-            fprintf(stderr, "unexpected character '%c' (0x%x)\n", c, c);
-            exit(1);//handle lexical errors here
+            return t_lexerror;
+            // fprintf(stderr, "unexpected character '%c' (0x%x)\n", c, c);
+            // exit(1);//handle lexical errors here
         }
 }
