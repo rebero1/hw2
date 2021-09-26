@@ -81,7 +81,7 @@ token scan()
                 fprintf(stderr,
                         "expected '=' after ':', got '%c' (0x%x)\n",
                         c, c);
-                exit(1);
+                // exit(1);
             }
             else
             {
@@ -104,7 +104,7 @@ token scan()
                fprintf(stderr,
                         "expected '=' after '=', got '%c' (0x%x)\n",
                         c, c);
-                exit(1);
+                // exit(1);
             }
             break;
   case '$':
@@ -138,7 +138,7 @@ token scan()
                fprintf(stderr,
                         "expected '=' after '=', got '%c' (0x%x)\n",
                         c, c);
-                exit(1);
+                // exit(1);
             }
             break;
  case '<':
@@ -222,8 +222,8 @@ token scan()
         
         
         default:
-            return t_lexerror;
-            // fprintf(stderr, "unexpected character '%c' (0x%x)\n", c, c);
+            // return t_lexerror;
+            fprintf(stderr, "unexpected character '%c' (0x%x)\n", c, c);
             // exit(1);//handle lexical errors here
         }
 }

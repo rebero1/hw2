@@ -38,15 +38,15 @@ static std::set<token> first_mo = {t_mul,t_div};
 
 //FOLLOW SETS
 static std::set<token> follow_P = {};
-static std::set<token> follow_SL = {t_eof, t_id, t_read,t_write,t_if,t_do, t_od, t_check};
-static std::set<token> follow_S = {t_eof, t_id, t_read,t_write,t_if,t_do, t_od, t_check};
-static std::set<token> follow_R = {t_eof, t_id, t_read,t_write,t_if,t_do, t_od, t_check, t_rparen};
-static std::set<token> follow_E = {t_eof, t_id, t_read,t_write,t_if,t_do, t_od, t_check, t_rparen, t_dequals, t_nequal, t_lt,t_gt,t_ge,t_le};
-static std::set<token> follow_ET = {t_eof, t_id, t_read,t_write,t_if,t_do, t_od, t_check, t_rparen};
-static std::set<token> follow_T = {t_eof, t_id, t_read,t_write,t_if,t_do, t_od, t_check, t_rparen, t_dequals, t_nequal, t_lt,t_gt,t_ge,t_le,t_add,t_sub};
-static std::set<token> follow_TT = {t_eof, t_id, t_read,t_write,t_if,t_do, t_od, t_check, t_rparen, t_dequals, t_nequal, t_lt,t_gt,t_ge,t_le};
-static std::set<token> follow_F = {t_eof, t_id, t_read,t_write,t_if,t_do, t_od, t_check, t_rparen, t_dequals, t_nequal, t_lt,t_gt,t_ge,t_le,t_add,t_sub, t_mul, t_div};
-static std::set<token> follow_FT = {t_eof, t_id, t_read,t_write,t_if,t_do, t_od, t_check, t_rparen, t_dequals, t_nequal, t_lt,t_gt,t_ge,t_le,t_add,t_sub};
+static std::set<token> follow_SL = {t_eof, t_id, t_read,t_write,t_if,t_fi, t_do, t_od, t_check};
+static std::set<token> follow_S = {t_eof, t_id, t_read,t_write,t_if,t_fi, t_do, t_od, t_check};
+static std::set<token> follow_R = {t_eof, t_id, t_read,t_write,t_if,t_fi, t_do, t_od, t_check, t_rparen};
+static std::set<token> follow_E = {t_eof, t_id, t_read,t_write,t_if,t_fi, t_do, t_od, t_check, t_rparen, t_dequals, t_nequal, t_lt,t_gt,t_ge,t_le};
+static std::set<token> follow_ET = {t_eof, t_id, t_read,t_write,t_if,t_fi, t_do, t_od, t_check, t_rparen};
+static std::set<token> follow_T = {t_eof, t_id, t_read,t_write,t_if,t_fi, t_do, t_od, t_check, t_rparen, t_dequals, t_nequal, t_lt,t_gt,t_ge,t_le,t_add,t_sub};
+static std::set<token> follow_TT = {t_eof, t_id, t_read,t_write,t_if,t_fi, t_do, t_od, t_check, t_rparen, t_dequals, t_nequal, t_lt,t_gt,t_ge,t_le};
+static std::set<token> follow_F = {t_eof, t_id, t_read,t_write,t_if,t_fi, t_do, t_od, t_check, t_rparen, t_dequals, t_nequal, t_lt,t_gt,t_ge,t_le,t_add,t_sub, t_mul, t_div};
+static std::set<token> follow_FT = {t_eof, t_id, t_read,t_write,t_if,t_fi, t_do, t_od, t_check, t_rparen, t_dequals, t_nequal, t_lt,t_gt,t_ge,t_le,t_add,t_sub};
 static std::set<token> follow_ro = {t_id, t_lparen,t_literal};
 static std::set<token> follow_ao = {t_id, t_lparen,t_literal};
 static std::set<token> follow_mo = {t_id, t_lparen,t_literal};
@@ -108,7 +108,7 @@ void match(token expected)
     }
     else{
         // token_image = expected + token_image;
-        std::cout<<"let's pretend we matched "<<names[upcoming_token];
+        std::cerr<<"error: expected "<<names[expected]<<" got "<<names[upcoming_token]<<std::endl;
         if (expected == t_id || expected == t_literal)
             std::cout<<": "<<token_image;
         std::cout.put('\n');
