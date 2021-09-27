@@ -1,0 +1,1 @@
+read n cp := 2 if n > 0  n := 0 fi  $$

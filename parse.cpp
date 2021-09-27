@@ -52,6 +52,9 @@ static std::set<token> follow_ao = {t_id, t_lparen,t_literal};
 static std::set<token> follow_mo = {t_id, t_lparen,t_literal};
 
 
+int location = 0;
+std::string name = "test2.txt";
+
 
 void error()
 {
@@ -68,14 +71,14 @@ int check_for_error(std::set<token> first_set, std::set<token> follow_set){
      std::cerr<<"error: token \""<<names[upcoming_token]<<"\" not parseable\n";
      memmove(token_image, token_image+1,strlen(token_image +1)+1);
 
-     if(upcoming_token != t_eof) upcoming_token = scan();
+     if(upcoming_token != t_eof) upcoming_token = scan(location,name);
      
  }
 
  
  while(first_set.find(upcoming_token) == first_set.end() && follow_set.find(upcoming_token) == follow_set.end() && upcoming_token != t_eof){//delete tokens
     memmove(token_image, token_image+1,strlen(token_image +1)+1);
-    if(upcoming_token != t_eof) upcoming_token = scan();
+    if(upcoming_token != t_eof) upcoming_token = scan(location,name);
  }
 
 
@@ -104,7 +107,7 @@ void match(token expected)
             std::cout<<": "<<token_image;
         std::cout.put('\n');
         
-        upcoming_token = scan();
+        upcoming_token = scan(location,name);
     }
     else{
         // token_image = expected + token_image;
@@ -112,7 +115,7 @@ void match(token expected)
         if (expected == t_id || expected == t_literal)
             std::cout<<": "<<token_image;
         std::cout.put('\n');
-        upcoming_token = scan();
+        upcoming_token = scan(location,name);
     }
         // error();
 }
@@ -605,9 +608,12 @@ void expr_tail()
 
 }
 
-int main()
+int main(int argc,  char** argv)
 {
-    upcoming_token = scan();
+
+    name = argv[1];
+    std::cout<<argc;
+    upcoming_token = scan(location,name);
     // std::cout<<"upcoming token: "<<upcoming_token<<std::endl;
     program();
     return 0;

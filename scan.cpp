@@ -8,27 +8,34 @@
 // #include "stdlib.h"
 #include "string.h"
 // #include "ctype.h"
-
+#include <fstream>
 #include "scan.h"
 
 char token_image[MAX_TOKEN_LEN];
 
-token scan()
+token scan(int &location, std::string &name)
 {
     // static int c = ' ';
     char c;
     /* next available char; extra (int) width accommodates EOF */
     int i = 0; /* index into token_image */
- std::cin.get(c);
-   
+
+std::ifstream input_file(name);
+ input_file.seekg(location);
+c = input_file.get();  location =  input_file.tellg( );
+
+
     // /* skip white space */
     while (isspace(c))
     {  
-        c = getchar();
+        c = input_file.tellg();
     }
    
-    if (c == EOF)
-        return t_eof;
+    if (c == EOF){
+         location =  input_file.tellg( );
+              return t_eof;
+    }
+   
     if (isalpha(c))
     {
         do
@@ -39,9 +46,11 @@ token scan()
                 std::cerr << "max token length exceeded\n";
                 exit(1);
             }
-            std::cin.get(c);
+         c = input_file.get();  location =  input_file.tellg( );  
         } while (isalpha(c) || isdigit(c) || c == '_');
         token_image[i] = '\0';
+
+        location =  input_file.tellg( );
         if (!strcmp(token_image, "read"))
             return t_read;
         else if (!strcmp(token_image, "write"))
@@ -66,16 +75,17 @@ token scan()
         do
         {
             token_image[i++] = c;
-            std::cin.get(c);
+         c = input_file.get();  location =  input_file.tellg( );
         } while (isdigit(c));
         token_image[i] = '\0';
+          location =  input_file.tellg( );
         return t_literal;
     }
     else
         switch (c)
         {
         case ':':
-            std::cin.get(c);
+         c = input_file.get();  location =  input_file.tellg( );  
             if (c != '=')
             {
 
@@ -86,17 +96,19 @@ token scan()
             }
             else
             {
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( );   
+                
                 return t_gets;
             }
             break;
         case '=':
-            std::cin.get(c);
+         c = input_file.get();  location =  input_file.tellg( );  
 
 
             if (c == '=')
             {
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( );   
+                 location =  input_file.tellg( );
                 return t_dequals;
             }
             
@@ -109,21 +121,20 @@ token scan()
             }
             break;
   case '$':
-            std::cin.get(c);
-
+         c = input_file.get();  location =  input_file.tellg( );   
 
             if (c == '$')
             {
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( );   
                 return t_eof;
             }
          case '>':
-            std::cin.get(c);
+        c = input_file.get();  location =  input_file.tellg( );   
 
 
             if (c == '=')
             {
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( );  
                 return t_ge;
             }
 
@@ -143,12 +154,12 @@ token scan()
             }
             break;
  case '<':
-            std::cin.get(c);
+         c = input_file.get();  location =  input_file.tellg( );  
 
 
             if (c == '=')
             {
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( );   
                 return t_ge;
             }
 
@@ -160,13 +171,13 @@ token scan()
             }
               if(c == '>')
             {
-               std::cin.get(c);
+            c = input_file.get();  location =  input_file.tellg( );   
                 return t_nequal;
             }
 
              if(c == '=')
             {
-               std::cin.get(c);
+            c = input_file.get();  location =  input_file.tellg( );   
                 return t_le;
             }
             
@@ -180,18 +191,18 @@ token scan()
             break;
 
             //  case '<':
-            // std::cin.get(c);
+            //c = input_file.get();  location =  input_file.tellg( );
 
 
             // if (c == '=')
             // {
-            //     std::cin.get(c);
+            //  c = input_file.get();  location =  input_file.tellg( );  location =  input_file.tellg( );  location =  input_file.tellg( );
             //     return t_gets;
             // }
 
             // if (c == ' ')
             // {
-            //     std::cin.get(c);
+            //  c = input_file.get();  location =  input_file.tellg( );  location =  input_file.tellg( );  location =  input_file.tellg( );
             //     return t_le;
             // }
             
@@ -199,26 +210,26 @@ token scan()
 
         
         case '+':
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( );   
             return t_add;
         case '-':
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( );  
             return t_sub;
         case '*':
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( );   
             return t_mul;
         case '/':
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( ); 
             return t_div;
          
                 return t_eof;
            
             return t_add;
         case '(':
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( );   
             return t_lparen;
         case ')':
-                std::cin.get(c);
+             c = input_file.get();  location =  input_file.tellg( );  
             return t_rparen;
         
         

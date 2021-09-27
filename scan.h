@@ -8,7 +8,7 @@ t_dequals, t_nequal, t_lt, t_gt, t_le, t_ge, t_lexerror};
 
 #define MAX_TOKEN_LEN 200
 extern char token_image[MAX_TOKEN_LEN];
-extern enum token scan();
+extern enum token scan(int &location, std::string &name);
 
 
 
