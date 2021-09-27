@@ -89,9 +89,11 @@ c = input_file.get();  location =  input_file.tellg( );
             if (c != '=')
             {
 
-                fprintf(stderr,
-                        "expected '=' after ':', got '%c' (0x%x)\n",
-                        c, c);
+                // fprintf(stderr,
+                //         "expected '=' after ':', got '%c' (0x%x)\n",
+                //         c, c);
+
+                            std::cerr << "Unexpected charcater"<<c<<" (0x <<c";
                 // exit(1);
             }
             else
@@ -114,9 +116,10 @@ c = input_file.get();  location =  input_file.tellg( );
             
             else
             {
-               fprintf(stderr,
-                        "expected '=' after '=', got '%c' (0x%x)\n",
-                        c, c);
+            //    fprintf(stderr,
+            //             "expected '=' after '=', got '%c' (0x%x)\n",
+            //             c, c);
+                            std::cerr << "Unexpected charcater"<<c<<" (0x <<c";
                 // exit(1);
             }
             break;
@@ -147,9 +150,10 @@ c = input_file.get();  location =  input_file.tellg( );
             
             else
             {
-               fprintf(stderr,
-                        "expected '=' after '=', got '%c' (0x%x)\n",
-                        c, c);
+            //    fprintf(stderr,
+            //             "expected '=' after '=', got '%c' (0x%x)\n",
+            //             c, c);
+                            std::cerr << "Unexpected charcater"<<c<<" (0x <<c";
                 // exit(1);
             }
             break;
@@ -183,9 +187,10 @@ c = input_file.get();  location =  input_file.tellg( );
             
             else
             {
-               fprintf(stderr,
-                        "expected '=' after '=', got '%c' (0x%x)\n",
-                        c, c);
+            //    fprintf(stderr,
+            //             "expected '=' after '=', got '%c' (0x%x)\n",
+            //             c, c);
+                            std::cerr << "Unexpected charcater"<<c<<" (0x <<c";
                 exit(1);
             }
             break;
@@ -235,7 +240,8 @@ c = input_file.get();  location =  input_file.tellg( );
         
         default:
             // return t_lexerror;
-            fprintf(stderr, "unexpected character '%c' (0x%x)\n", c, c);
+         //   fprintf(stderr, "unexpected character '%c' (0x%x)\n", c, c);
+            std::cerr << "Unexpected charcater"<<c<<" (0x <<c";
             // exit(1);//handle lexical errors here
         }
 }

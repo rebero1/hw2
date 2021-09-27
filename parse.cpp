@@ -466,7 +466,7 @@ std::string factor()
         std::cout<<"predict factor --> literal\n";
         syntax_tree+="(num \"";
         syntax_tree+= token_image;
-        std::cout<<"here"<<token_image<<std::endl;
+       
         syntax_tree+="\")";
         match(t_literal);
         break;
@@ -476,7 +476,7 @@ std::string factor()
         syntax_tree+= token_image;
         syntax_tree+="\")";
         match(t_id);
-        std::cout<<"here"<<token_image<<std::endl;
+         
         break;
     case t_lparen:
         std::cout<<"predict factor --> lparen relation rparen\n";
