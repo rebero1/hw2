@@ -66,7 +66,7 @@ int check_for_error(std::set<token> first_set, std::set<token> follow_set){
     
  if(first_set.find(upcoming_token) == first_set.end() && follow_set.find(upcoming_token) == follow_set.end()){//print error
      std::cerr<<"error: token \""<<names[upcoming_token]<<"\" not parseable\n";
-    //  memmove(token_image, token_image+1,strlen(token_image +1)+1);
+     memmove(token_image, token_image+1,strlen(token_image +1)+1);
 
      if(upcoming_token != t_eof) upcoming_token = scan();
      
@@ -74,7 +74,7 @@ int check_for_error(std::set<token> first_set, std::set<token> follow_set){
 
  
  while(first_set.find(upcoming_token) == first_set.end() && follow_set.find(upcoming_token) == follow_set.end() && upcoming_token != t_eof){//delete tokens
-    // memmove(token_image, token_image+1,strlen(token_image +1)+1);
+    memmove(token_image, token_image+1,strlen(token_image +1)+1);
     if(upcoming_token != t_eof) upcoming_token = scan();
  }
 
@@ -397,7 +397,7 @@ std::string term_tail(std::string t)
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return syntax_tree;
+            return t;
         default:
             error();    
     }
@@ -503,7 +503,7 @@ std::string factor_tail(std::string f)
         case 3: //case 3 - t_eof
             break;
         case 1: //case 1 - token in follow_set
-            return syntax_tree;
+            return f;
         default:
             error();    
     }
