@@ -26,7 +26,7 @@ c = input_file.get();  location =  input_file.tellg( );
 
 
     // /* skip white space */
-    while (isspace(c))
+    while (isspace(c) || c == '\n')
     {  
         c = input_file.tellg();
     }
